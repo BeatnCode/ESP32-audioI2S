@@ -9,11 +9,11 @@
  *
  */
 #include "Audio.h"
-#include "aac_decoder/aac_decoder.h"
-#include "flac_decoder/flac_decoder.h"
+// #include "aac_decoder/aac_decoder.h"
+// #include "flac_decoder/flac_decoder.h"
 #include "mp3_decoder/mp3_decoder.h"
-#include "opus_decoder/opus_decoder.h"
-#include "vorbis_decoder/vorbis_decoder.h"
+// #include "opus_decoder/opus_decoder.h"
+// #include "vorbis_decoder/vorbis_decoder.h"
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 AudioBuffer::AudioBuffer(size_t maxBlockSize) {
@@ -318,10 +318,10 @@ void Audio::setDefaults() {
     initInBuff(); // initialize InputBuffer if not already done
     InBuff.resetBuffer();
     MP3Decoder_FreeBuffers();
-    FLACDecoder_FreeBuffers();
-    AACDecoder_FreeBuffers();
-    OPUSDecoder_FreeBuffers();
-    VORBISDecoder_FreeBuffers();
+    // FLACDecoder_FreeBuffers();
+    // AACDecoder_FreeBuffers();
+    // OPUSDecoder_FreeBuffers();
+    // VORBISDecoder_FreeBuffers();
     if(m_playlistBuff) {
         free(m_playlistBuff);
         m_playlistBuff = NULL;
@@ -1515,7 +1515,7 @@ int Audio::read_FLAC_Header(uint8_t* data, size_t len) {
         m_controlCounter = FLAC_OKAY;
         m_audioDataStart = headerSize;
         m_audioDataSize = m_contentlength - m_audioDataStart;
-        FLACSetRawBlockParams(m_flacNumChannels, m_flacSampleRate, m_flacBitsPerSample, m_flacTotalSamplesInStream, m_audioDataSize);
+        // FLACSetRawBlockParams(m_flacNumChannels, m_flacSampleRate, m_flacBitsPerSample, m_flacTotalSamplesInStream, m_audioDataSize);
         if(picLen) {
             size_t pos = audiofile.position();
             if(audio_id3image) audio_id3image(audiofile, picPos, picLen);
@@ -3224,20 +3224,20 @@ void Audio::processLocalFile() {
         if(m_resumeFilePos >= (int32_t)m_audioDataStart + m_audioDataSize) {goto exit;}
         m_haveNewFilePos = m_resumeFilePos;
 
-        if(m_codec == CODEC_M4A) {
-            m_resumeFilePos = m4a_correctResumeFilePos(m_resumeFilePos);
-        }
-        if(m_codec == CODEC_WAV) {
-            while((m_resumeFilePos % 4) != 0){ // must be divisible by four
-                m_resumeFilePos++;
-                if(m_resumeFilePos >= m_fileSize) goto exit;
-            }
-        }
-        if(m_codec == CODEC_FLAC) {
-            m_resumeFilePos = flac_correctResumeFilePos(m_resumeFilePos);
-            if(m_resumeFilePos == -1) goto exit;
-            FLACDecoderReset();
-        }
+        // if(m_codec == CODEC_M4A) {
+        //     m_resumeFilePos = m4a_correctResumeFilePos(m_resumeFilePos);
+        // }
+        // if(m_codec == CODEC_WAV) {
+        //     while((m_resumeFilePos % 4) != 0){ // must be divisible by four
+        //         m_resumeFilePos++;
+        //         if(m_resumeFilePos >= m_fileSize) goto exit;
+        //     }
+        // }
+        // if(m_codec == CODEC_FLAC) {
+        //     m_resumeFilePos = flac_correctResumeFilePos(m_resumeFilePos);
+        //     if(m_resumeFilePos == -1) goto exit;
+        //     FLACDecoderReset();
+        // }
         if(m_codec == CODEC_MP3) {
             m_resumeFilePos = mp3_correctResumeFilePos(m_resumeFilePos);
             if(m_resumeFilePos == -1) goto exit;
@@ -3274,7 +3274,7 @@ void Audio::processLocalFile() {
         if(m_f_loop && m_f_stream) {                                                                                      // eof
             AUDIO_INFO("loop from: %lu to: %lu", (long unsigned int)getFilePos(), (long unsigned int)m_audioDataStart); // loop
             setFilePos(m_audioDataStart);
-            if(m_codec == CODEC_FLAC) FLACDecoderReset();
+            // if(m_codec == CODEC_FLAC) FLACDecoderReset();
             m_audioCurrentTime = 0;
             byteCounter = m_audioDataStart;
             f_fileDataComplete = false;
@@ -3289,11 +3289,11 @@ exit:
         AUDIO_INFO("Closing audio file \"%s\"", afn);
 
         if(m_codec == CODEC_MP3) MP3Decoder_FreeBuffers();
-        if(m_codec == CODEC_AAC) AACDecoder_FreeBuffers();
-        if(m_codec == CODEC_M4A) AACDecoder_FreeBuffers();
-        if(m_codec == CODEC_FLAC) FLACDecoder_FreeBuffers();
-        if(m_codec == CODEC_OPUS) OPUSDecoder_FreeBuffers();
-        if(m_codec == CODEC_VORBIS) VORBISDecoder_FreeBuffers();
+        // if(m_codec == CODEC_AAC) AACDecoder_FreeBuffers();
+        // if(m_codec == CODEC_M4A) AACDecoder_FreeBuffers();
+        // if(m_codec == CODEC_FLAC) FLACDecoder_FreeBuffers();
+        // if(m_codec == CODEC_OPUS) OPUSDecoder_FreeBuffers();
+        // if(m_codec == CODEC_VORBIS) VORBISDecoder_FreeBuffers();
 
         if(afn) {
             if(audio_eof_mp3) audio_eof_mp3(afn);
@@ -3494,11 +3494,11 @@ void Audio::processWebFile() {
         m_f_running = false;
         m_streamType = ST_NONE;
         if(m_codec == CODEC_MP3) MP3Decoder_FreeBuffers();
-        if(m_codec == CODEC_AAC) AACDecoder_FreeBuffers();
-        if(m_codec == CODEC_M4A) AACDecoder_FreeBuffers();
-        if(m_codec == CODEC_FLAC) FLACDecoder_FreeBuffers();
-        if(m_codec == CODEC_OPUS) OPUSDecoder_FreeBuffers();
-        if(m_codec == CODEC_VORBIS) VORBISDecoder_FreeBuffers();
+        // if(m_codec == CODEC_AAC) AACDecoder_FreeBuffers();
+        // if(m_codec == CODEC_M4A) AACDecoder_FreeBuffers();
+        // if(m_codec == CODEC_FLAC) FLACDecoder_FreeBuffers();
+        // if(m_codec == CODEC_OPUS) OPUSDecoder_FreeBuffers();
+        // if(m_codec == CODEC_VORBIS) VORBISDecoder_FreeBuffers();
         m_codec = CODEC_NONE;
         if(m_f_tts) {
             AUDIO_INFO("End of speech: \"%s\"", m_lastHost);
@@ -4023,71 +4023,71 @@ bool Audio::initializeDecoder() {
                 InBuff.changeMaxBlockSize(m_frameSizeMP3);
             }
             break;
-        case CODEC_AAC:
-            if(!AACDecoder_IsInit()) {
-                if(!AACDecoder_AllocateBuffers()) {
-                    AUDIO_INFO("The AACDecoder could not be initialized");
-                    goto exit;
-                }
-                gfH = ESP.getFreeHeap();
-                hWM = uxTaskGetStackHighWaterMark(NULL);
-                AUDIO_INFO("AACDecoder has been initialized, free Heap: %lu bytes , free stack %lu DWORDs", (long unsigned int)gfH, (long unsigned int)hWM);
-                InBuff.changeMaxBlockSize(m_frameSizeAAC);
-            }
-            break;
-        case CODEC_M4A:
-            if(!AACDecoder_IsInit()) {
-                if(!AACDecoder_AllocateBuffers()) {
-                    AUDIO_INFO("The AACDecoder could not be initialized");
-                    goto exit;
-                }
-                gfH = ESP.getFreeHeap();
-                hWM = uxTaskGetStackHighWaterMark(NULL);
-                AUDIO_INFO("AACDecoder has been initialized, free Heap: %lu bytes , free stack %lu DWORDs", (long unsigned int)gfH, (long unsigned int)hWM);
-                InBuff.changeMaxBlockSize(m_frameSizeAAC);
-            }
-            break;
-        case CODEC_FLAC:
-            if(!psramFound()) {
-                AUDIO_INFO("FLAC works only with PSRAM!");
-                goto exit;
-            }
-            if(!FLACDecoder_AllocateBuffers()) {
-                AUDIO_INFO("The FLACDecoder could not be initialized");
-                goto exit;
-            }
-            gfH = ESP.getFreeHeap();
-            hWM = uxTaskGetStackHighWaterMark(NULL);
-            InBuff.changeMaxBlockSize(m_frameSizeFLAC);
-            AUDIO_INFO("FLACDecoder has been initialized, free Heap: %lu bytes , free stack %lu DWORDs", (long unsigned int)gfH, (long unsigned int)hWM);
-            break;
-        case CODEC_OPUS:
-            if(!OPUSDecoder_AllocateBuffers()) {
-                AUDIO_INFO("The OPUSDecoder could not be initialized");
-                goto exit;
-            }
-            gfH = ESP.getFreeHeap();
-            hWM = uxTaskGetStackHighWaterMark(NULL);
-            AUDIO_INFO("OPUSDecoder has been initialized, free Heap: %lu bytes , free stack %lu DWORDs", (long unsigned int)gfH, (long unsigned int)hWM);
-            InBuff.changeMaxBlockSize(m_frameSizeOPUS);
-            break;
-        case CODEC_VORBIS:
-            if(!psramFound()) {
-                AUDIO_INFO("VORBIS works only with PSRAM!");
-                goto exit;
-            }
-            if(!VORBISDecoder_AllocateBuffers()) {
-                AUDIO_INFO("The VORBISDecoder could not be initialized");
-                goto exit;
-            }
-            gfH = ESP.getFreeHeap();
-            hWM = uxTaskGetStackHighWaterMark(NULL);
-            AUDIO_INFO("VORBISDecoder has been initialized, free Heap: %lu bytes,  free stack %lu DWORDs", (long unsigned int)gfH, (long unsigned int)hWM);
-            InBuff.changeMaxBlockSize(m_frameSizeVORBIS);
-            break;
-        case CODEC_WAV: InBuff.changeMaxBlockSize(m_frameSizeWav); break;
-        case CODEC_OGG: // the decoder will be determined later (vorbis, flac, opus?)
-            break;
+        // case CODEC_AAC:
+        //     if(!AACDecoder_IsInit()) {
+        //         if(!AACDecoder_AllocateBuffers()) {
+        //             AUDIO_INFO("The AACDecoder could not be initialized");
+        //             goto exit;
+        //         }
+        //         gfH = ESP.getFreeHeap();
+        //         hWM = uxTaskGetStackHighWaterMark(NULL);
+        //         AUDIO_INFO("AACDecoder has been initialized, free Heap: %lu bytes , free stack %lu DWORDs", (long unsigned int)gfH, (long unsigned int)hWM);
+        //         InBuff.changeMaxBlockSize(m_frameSizeAAC);
+        //     }
+        //     break;
+        // case CODEC_M4A:
+        //     if(!AACDecoder_IsInit()) {
+        //         if(!AACDecoder_AllocateBuffers()) {
+        //             AUDIO_INFO("The AACDecoder could not be initialized");
+        //             goto exit;
+        //         }
+        //         gfH = ESP.getFreeHeap();
+        //         hWM = uxTaskGetStackHighWaterMark(NULL);
+        //         AUDIO_INFO("AACDecoder has been initialized, free Heap: %lu bytes , free stack %lu DWORDs", (long unsigned int)gfH, (long unsigned int)hWM);
+        //         InBuff.changeMaxBlockSize(m_frameSizeAAC);
+        //     }
+        //     break;
+        // case CODEC_FLAC:
+        //     if(!psramFound()) {
+        //         AUDIO_INFO("FLAC works only with PSRAM!");
+        //         goto exit;
+        //     }
+        //     if(!FLACDecoder_AllocateBuffers()) {
+        //         AUDIO_INFO("The FLACDecoder could not be initialized");
+        //         goto exit;
+        //     }
+        //     gfH = ESP.getFreeHeap();
+        //     hWM = uxTaskGetStackHighWaterMark(NULL);
+        //     InBuff.changeMaxBlockSize(m_frameSizeFLAC);
+        //     AUDIO_INFO("FLACDecoder has been initialized, free Heap: %lu bytes , free stack %lu DWORDs", (long unsigned int)gfH, (long unsigned int)hWM);
+        //     break;
+        // case CODEC_OPUS:
+        //     if(!OPUSDecoder_AllocateBuffers()) {
+        //         AUDIO_INFO("The OPUSDecoder could not be initialized");
+        //         goto exit;
+        //     }
+        //     gfH = ESP.getFreeHeap();
+        //     hWM = uxTaskGetStackHighWaterMark(NULL);
+        //     AUDIO_INFO("OPUSDecoder has been initialized, free Heap: %lu bytes , free stack %lu DWORDs", (long unsigned int)gfH, (long unsigned int)hWM);
+        //     InBuff.changeMaxBlockSize(m_frameSizeOPUS);
+        //     break;
+        // case CODEC_VORBIS:
+        //     if(!psramFound()) {
+        //         AUDIO_INFO("VORBIS works only with PSRAM!");
+        //         goto exit;
+        //     }
+        //     if(!VORBISDecoder_AllocateBuffers()) {
+        //         AUDIO_INFO("The VORBISDecoder could not be initialized");
+        //         goto exit;
+        //     }
+        //     gfH = ESP.getFreeHeap();
+        //     hWM = uxTaskGetStackHighWaterMark(NULL);
+        //     AUDIO_INFO("VORBISDecoder has been initialized, free Heap: %lu bytes,  free stack %lu DWORDs", (long unsigned int)gfH, (long unsigned int)hWM);
+        //     InBuff.changeMaxBlockSize(m_frameSizeVORBIS);
+        //     break;
+        // case CODEC_WAV: InBuff.changeMaxBlockSize(m_frameSizeWav); break;
+        // case CODEC_OGG: // the decoder will be determined later (vorbis, flac, opus?)
+        //     break;
         default: goto exit; break;
     }
     return true;
@@ -4371,22 +4371,22 @@ void Audio::showCodecParams() {
     if(getBitRate()) { AUDIO_INFO("BitRate: %lu", (long unsigned int)getBitRate()); }
     else { AUDIO_INFO("BitRate: N/A"); }
 
-    if(m_codec == CODEC_AAC) {
-        uint8_t answ = AACGetFormat();
-        if(answ < 4) {
-            const char hf[4][8] = {"unknown", "ADTS", "ADIF", "RAW"};
-            AUDIO_INFO("AAC HeaderFormat: %s", hf[answ])
-        }
-        if(answ == 1) { // ADTS Header
-            uint8_t aacId = AACGetID();
-            uint8_t aacPr = AACGetProfile();
-            if(aacId < 2 && aacPr < 4) {
-                const char co[2][7] = {"MPEG-4", "MPEG-2"};
-                const char pr[4][23] = {"Main", "LowComplexity", "Scalable Sampling Rate", "reserved"};
-                AUDIO_INFO("AAC Codec: %s %s", co[aacId], pr[answ]);
-            }
-        }
-    }
+    // if(m_codec == CODEC_AAC) {
+    //     uint8_t answ = AACGetFormat();
+    //     if(answ < 4) {
+    //         const char hf[4][8] = {"unknown", "ADTS", "ADIF", "RAW"};
+    //         AUDIO_INFO("AAC HeaderFormat: %s", hf[answ])
+    //     }
+    //     if(answ == 1) { // ADTS Header
+    //         uint8_t aacId = AACGetID();
+    //         uint8_t aacPr = AACGetProfile();
+    //         if(aacId < 2 && aacPr < 4) {
+    //             const char co[2][7] = {"MPEG-4", "MPEG-2"};
+    //             const char pr[4][23] = {"Main", "LowComplexity", "Scalable Sampling Rate", "reserved"};
+    //             AUDIO_INFO("AAC Codec: %s %s", co[aacId], pr[answ]);
+    //         }
+    //     }
+    // }
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 int Audio::findNextSync(uint8_t* data, size_t len) {
@@ -4407,24 +4407,24 @@ int Audio::findNextSync(uint8_t* data, size_t len) {
         nextSync = MP3FindSyncWord(data, len);
         if(nextSync == -1) return len; // syncword not found, search next block
     }
-    if(m_codec == CODEC_AAC) { nextSync = AACFindSyncWord(data, len); }
-    if(m_codec == CODEC_M4A) {
-        AACSetRawBlockParams(0, 2, 44100, 1);
-        m_f_playing = true;
-        nextSync = 0;
-    }
-    if(m_codec == CODEC_FLAC) {
-        nextSync = FLACFindSyncWord(data, len);
-        if(nextSync == -1) return len; // OggS not found, search next block
-    }
-    if(m_codec == CODEC_OPUS) {
-        nextSync = OPUSFindSyncWord(data, len);
-        if(nextSync == -1) return len; // OggS not found, search next block
-    }
-    if(m_codec == CODEC_VORBIS) {
-        nextSync = VORBISFindSyncWord(data, len);
-        if(nextSync == -1) return len; // OggS not found, search next block
-    }
+    // if(m_codec == CODEC_AAC) { nextSync = AACFindSyncWord(data, len); }
+    // if(m_codec == CODEC_M4A) {
+    //     AACSetRawBlockParams(0, 2, 44100, 1);
+    //     m_f_playing = true;
+    //     nextSync = 0;
+    // }
+    // if(m_codec == CODEC_FLAC) {
+    //     nextSync = FLACFindSyncWord(data, len);
+    //     if(nextSync == -1) return len; // OggS not found, search next block
+    // }
+    // if(m_codec == CODEC_OPUS) {
+    //     nextSync = OPUSFindSyncWord(data, len);
+    //     if(nextSync == -1) return len; // OggS not found, search next block
+    // }
+    // if(m_codec == CODEC_VORBIS) {
+    //     nextSync = VORBISFindSyncWord(data, len);
+    //     if(nextSync == -1) return len; // OggS not found, search next block
+    // }
     if(nextSync == -1) {
         if(audio_info && swnf == 0) audio_info("syncword not found");
         else {
@@ -4452,42 +4452,42 @@ void Audio::setDecoderItems() {
         setBitsPerSample(MP3GetBitsPerSample());
         setBitrate(MP3GetBitrate());
     }
-    if(m_codec == CODEC_AAC || m_codec == CODEC_M4A) {
-        setChannels(AACGetChannels());
-        setSampleRate(AACGetSampRate());
-        setBitsPerSample(AACGetBitsPerSample());
-        setBitrate(AACGetBitrate());
-    }
-    if(m_codec == CODEC_FLAC) {
-        setChannels(FLACGetChannels());
-        setSampleRate(FLACGetSampRate());
-        setBitsPerSample(FLACGetBitsPerSample());
-        setBitrate(FLACGetBitRate());
-        if(FLACGetAudioDataStart() > 0){ // only flac-ogg, native flac sets audioDataStart in readFlacHeader()
-            m_audioDataStart = FLACGetAudioDataStart();
-            if(getFileSize()) m_audioDataSize = getFileSize() - m_audioDataStart;
-        }
-    }
-    if(m_codec == CODEC_OPUS) {
-        setChannels(OPUSGetChannels());
-        setSampleRate(OPUSGetSampRate());
-        setBitsPerSample(OPUSGetBitsPerSample());
-        setBitrate(OPUSGetBitRate());
-        if(OPUSGetAudioDataStart() > 0){
-            m_audioDataStart = OPUSGetAudioDataStart();
-            if(getFileSize()) m_audioDataSize = getFileSize() - m_audioDataStart;
-        }
-    }
-    if(m_codec == CODEC_VORBIS) {
-        setChannels(VORBISGetChannels());
-        setSampleRate(VORBISGetSampRate());
-        setBitsPerSample(VORBISGetBitsPerSample());
-        setBitrate(VORBISGetBitRate());
-        if(VORBISGetAudioDataStart() > 0){
-            m_audioDataStart = VORBISGetAudioDataStart();
-            if(getFileSize()) m_audioDataSize = getFileSize() - m_audioDataStart;
-        }
-    }
+    // if(m_codec == CODEC_AAC || m_codec == CODEC_M4A) {
+    //     setChannels(AACGetChannels());
+    //     setSampleRate(AACGetSampRate());
+    //     setBitsPerSample(AACGetBitsPerSample());
+    //     setBitrate(AACGetBitrate());
+    // }
+    // if(m_codec == CODEC_FLAC) {
+    //     setChannels(FLACGetChannels());
+    //     setSampleRate(FLACGetSampRate());
+    //     setBitsPerSample(FLACGetBitsPerSample());
+    //     setBitrate(FLACGetBitRate());
+    //     if(FLACGetAudioDataStart() > 0){ // only flac-ogg, native flac sets audioDataStart in readFlacHeader()
+    //         m_audioDataStart = FLACGetAudioDataStart();
+    //         if(getFileSize()) m_audioDataSize = getFileSize() - m_audioDataStart;
+    //     }
+    // }
+    // if(m_codec == CODEC_OPUS) {
+    //     setChannels(OPUSGetChannels());
+    //     setSampleRate(OPUSGetSampRate());
+    //     setBitsPerSample(OPUSGetBitsPerSample());
+    //     setBitrate(OPUSGetBitRate());
+    //     if(OPUSGetAudioDataStart() > 0){
+    //         m_audioDataStart = OPUSGetAudioDataStart();
+    //         if(getFileSize()) m_audioDataSize = getFileSize() - m_audioDataStart;
+    //     }
+    // }
+    // if(m_codec == CODEC_VORBIS) {
+    //     setChannels(VORBISGetChannels());
+    //     setSampleRate(VORBISGetSampRate());
+    //     setBitsPerSample(VORBISGetBitsPerSample());
+    //     setBitrate(VORBISGetBitRate());
+    //     if(VORBISGetAudioDataStart() > 0){
+    //         m_audioDataStart = VORBISGetAudioDataStart();
+    //         if(getFileSize()) m_audioDataSize = getFileSize() - m_audioDataStart;
+    //     }
+    // }
     if(getBitsPerSample() != 8 && getBitsPerSample() != 16) {
         AUDIO_INFO("Bits per sample must be 8 or 16, found %i", getBitsPerSample());
         stopSong();
@@ -4522,11 +4522,11 @@ int Audio::sendBytes(uint8_t* data, size_t len) {
     switch(m_codec) {
         case CODEC_WAV:  m_decodeError = 0; bytesLeft = 0; break;
         case CODEC_MP3:  m_decodeError = MP3Decode(data, &bytesLeft, m_outBuff, 0); break;
-        case CODEC_AAC:  m_decodeError = AACDecode(data, &bytesLeft, m_outBuff); break;
-        case CODEC_M4A:  m_decodeError = AACDecode(data, &bytesLeft, m_outBuff); break;
-        case CODEC_FLAC: m_decodeError = FLACDecode(data, &bytesLeft, m_outBuff); break;
-        case CODEC_OPUS: m_decodeError = OPUSDecode(data, &bytesLeft, m_outBuff); break;
-        case CODEC_VORBIS: m_decodeError = VORBISDecode(data, &bytesLeft, m_outBuff); break;
+        // case CODEC_AAC:  m_decodeError = AACDecode(data, &bytesLeft, m_outBuff); break;
+        // case CODEC_M4A:  m_decodeError = AACDecode(data, &bytesLeft, m_outBuff); break;
+        // case CODEC_FLAC: m_decodeError = FLACDecode(data, &bytesLeft, m_outBuff); break;
+        // case CODEC_OPUS: m_decodeError = OPUSDecode(data, &bytesLeft, m_outBuff); break;
+        // case CODEC_VORBIS: m_decodeError = VORBISDecode(data, &bytesLeft, m_outBuff); break;
         default: {
             log_e("no valid codec found codec = %d", m_codec);
             stopSong();
@@ -4542,17 +4542,17 @@ int Audio::sendBytes(uint8_t* data, size_t len) {
 
         printDecodeError(m_decodeError);
         m_f_playing = false; // seek for new syncword
-        if(m_codec == CODEC_FLAC) {
-        //    if(m_decodeError == ERR_FLAC_BITS_PER_SAMPLE_TOO_BIG) stopSong();
-        //    if(m_decodeError == ERR_FLAC_RESERVED_CHANNEL_ASSIGNMENT) stopSong();
-        }
-        if(m_codec == CODEC_OPUS) {
-            if(m_decodeError == ERR_OPUS_HYBRID_MODE_UNSUPPORTED) stopSong();
-            if(m_decodeError == ERR_OPUS_SILK_MODE_UNSUPPORTED) stopSong();
-            if(m_decodeError == ERR_OPUS_NARROW_BAND_UNSUPPORTED) stopSong();
-            if(m_decodeError == ERR_OPUS_WIDE_BAND_UNSUPPORTED) stopSong();
-            if(m_decodeError == ERR_OPUS_SUPER_WIDE_BAND_UNSUPPORTED) stopSong();
-        }
+        // if(m_codec == CODEC_FLAC) {
+        // //    if(m_decodeError == ERR_FLAC_BITS_PER_SAMPLE_TOO_BIG) stopSong();
+        // //    if(m_decodeError == ERR_FLAC_RESERVED_CHANNEL_ASSIGNMENT) stopSong();
+        // }
+        // if(m_codec == CODEC_OPUS) {
+        //     if(m_decodeError == ERR_OPUS_HYBRID_MODE_UNSUPPORTED) stopSong();
+        //     if(m_decodeError == ERR_OPUS_SILK_MODE_UNSUPPORTED) stopSong();
+        //     if(m_decodeError == ERR_OPUS_NARROW_BAND_UNSUPPORTED) stopSong();
+        //     if(m_decodeError == ERR_OPUS_WIDE_BAND_UNSUPPORTED) stopSong();
+        //     if(m_decodeError == ERR_OPUS_SUPER_WIDE_BAND_UNSUPPORTED) stopSong();
+        // }
 
         return 1; // skip one byte and seek for the next sync word
     }
@@ -4568,64 +4568,64 @@ int Audio::sendBytes(uint8_t* data, size_t len) {
     char* st = NULL;
     std::vector<uint32_t> vec;
     switch(m_codec) {
-        case CODEC_WAV:     memmove(m_outBuff, data, len); // copy len data in outbuff and set validsamples and bytesdecoded=len
-                            if(getBitsPerSample() == 16) m_validSamples = len / (2 * getChannels());
-                            if(getBitsPerSample() == 8) m_validSamples = len / 2;
-                            break;
+        // case CODEC_WAV:     memmove(m_outBuff, data, len); // copy len data in outbuff and set validsamples and bytesdecoded=len
+        //                     if(getBitsPerSample() == 16) m_validSamples = len / (2 * getChannels());
+        //                     if(getBitsPerSample() == 8) m_validSamples = len / 2;
+        //                     break;
         case CODEC_MP3:     m_validSamples = MP3GetOutputSamps() / getChannels();
                             break;
-        case CODEC_AAC:     m_validSamples = AACGetOutputSamps() / getChannels();
-                            break;
-        case CODEC_M4A:     m_validSamples = AACGetOutputSamps() / getChannels();
-                            break;
-        case CODEC_FLAC:    if(m_decodeError == FLAC_PARSE_OGG_DONE) return bytesDecoded; // nothing to play
-                            m_validSamples = FLACGetOutputSamps() / getChannels();
-                            st = FLACgetStreamTitle();
-                            if(st) {
-                                AUDIO_INFO(st);
-                                if(audio_showstreamtitle) audio_showstreamtitle(st);
-                            }
-                            vec = FLACgetMetadataBlockPicture();
-                            if(vec.size() > 0){ // get blockpic data
-                                // log_i("---------------------------------------------------------------------------");
-                                // log_i("ogg metadata blockpicture found:");
-                                // for(int i = 0; i < vec.size(); i += 2) { log_i("segment %02i, pos %07i, len %05i", i / 2, vec[i], vec[i + 1]); }
-                                // log_i("---------------------------------------------------------------------------");
-                                if(audio_oggimage) audio_oggimage(audiofile, vec);
-                            }
-                            break;
-        case CODEC_OPUS:    if(m_decodeError == OPUS_PARSE_OGG_DONE) return bytesDecoded; // nothing to play
-                            m_validSamples = OPUSGetOutputSamps();
-                            st = OPUSgetStreamTitle();
-                            if(st){
-                                AUDIO_INFO(st);
-                                if(audio_showstreamtitle) audio_showstreamtitle(st);
-                            }
-                            vec = OPUSgetMetadataBlockPicture();
-                            if(vec.size() > 0){ // get blockpic data
-                                // log_i("---------------------------------------------------------------------------");
-                                // log_i("ogg metadata blockpicture found:");
-                                // for(int i = 0; i < vec.size(); i += 2) { log_i("segment %02i, pos %07i, len %05i", i / 2, vec[i], vec[i + 1]); }
-                                // log_i("---------------------------------------------------------------------------");
-                                if(audio_oggimage) audio_oggimage(audiofile, vec);
-                            }
-                            break;
-        case CODEC_VORBIS:  if(m_decodeError == VORBIS_PARSE_OGG_DONE) return bytesDecoded; // nothing to play
-                            m_validSamples = VORBISGetOutputSamps();
-                            st = VORBISgetStreamTitle();
-                            if(st) {
-                                AUDIO_INFO(st);
-                                if(audio_showstreamtitle) audio_showstreamtitle(st);
-                            }
-                            vec = VORBISgetMetadataBlockPicture();
-                            if(vec.size() > 0){ // get blockpic data
-                                // log_i("---------------------------------------------------------------------------");
-                                // log_i("ogg metadata blockpicture found:");
-                                // for(int i = 0; i < vec.size(); i += 2) { log_i("segment %02i, pos %07i, len %05i", i / 2, vec[i], vec[i + 1]); }
-                                // log_i("---------------------------------------------------------------------------");
-                                if(audio_oggimage) audio_oggimage(audiofile, vec);
-                            }
-                            break;
+        // case CODEC_AAC:     m_validSamples = AACGetOutputSamps() / getChannels();
+        //                     break;
+        // case CODEC_M4A:     m_validSamples = AACGetOutputSamps() / getChannels();
+        //                     break;
+        // case CODEC_FLAC:    if(m_decodeError == FLAC_PARSE_OGG_DONE) return bytesDecoded; // nothing to play
+        //                     m_validSamples = FLACGetOutputSamps() / getChannels();
+        //                     st = FLACgetStreamTitle();
+        //                     if(st) {
+        //                         AUDIO_INFO(st);
+        //                         if(audio_showstreamtitle) audio_showstreamtitle(st);
+        //                     }
+        //                     vec = FLACgetMetadataBlockPicture();
+        //                     if(vec.size() > 0){ // get blockpic data
+        //                         // log_i("---------------------------------------------------------------------------");
+        //                         // log_i("ogg metadata blockpicture found:");
+        //                         // for(int i = 0; i < vec.size(); i += 2) { log_i("segment %02i, pos %07i, len %05i", i / 2, vec[i], vec[i + 1]); }
+        //                         // log_i("---------------------------------------------------------------------------");
+        //                         if(audio_oggimage) audio_oggimage(audiofile, vec);
+        //                     }
+        //                     break;
+        // case CODEC_OPUS:    if(m_decodeError == OPUS_PARSE_OGG_DONE) return bytesDecoded; // nothing to play
+        //                     m_validSamples = OPUSGetOutputSamps();
+        //                     st = OPUSgetStreamTitle();
+        //                     if(st){
+        //                         AUDIO_INFO(st);
+        //                         if(audio_showstreamtitle) audio_showstreamtitle(st);
+        //                     }
+        //                     vec = OPUSgetMetadataBlockPicture();
+        //                     if(vec.size() > 0){ // get blockpic data
+        //                         // log_i("---------------------------------------------------------------------------");
+        //                         // log_i("ogg metadata blockpicture found:");
+        //                         // for(int i = 0; i < vec.size(); i += 2) { log_i("segment %02i, pos %07i, len %05i", i / 2, vec[i], vec[i + 1]); }
+        //                         // log_i("---------------------------------------------------------------------------");
+        //                         if(audio_oggimage) audio_oggimage(audiofile, vec);
+        //                     }
+        //                     break;
+        // case CODEC_VORBIS:  if(m_decodeError == VORBIS_PARSE_OGG_DONE) return bytesDecoded; // nothing to play
+        //                     m_validSamples = VORBISGetOutputSamps();
+        //                     st = VORBISgetStreamTitle();
+        //                     if(st) {
+        //                         AUDIO_INFO(st);
+        //                         if(audio_showstreamtitle) audio_showstreamtitle(st);
+        //                     }
+        //                     vec = VORBISgetMetadataBlockPicture();
+        //                     if(vec.size() > 0){ // get blockpic data
+        //                         // log_i("---------------------------------------------------------------------------");
+        //                         // log_i("ogg metadata blockpicture found:");
+        //                         // for(int i = 0; i < vec.size(); i += 2) { log_i("segment %02i, pos %07i, len %05i", i / 2, vec[i], vec[i + 1]); }
+        //                         // log_i("---------------------------------------------------------------------------");
+        //                         if(audio_oggimage) audio_oggimage(audiofile, vec);
+        //                     }
+        //                     break;
     }
     if(f_setDecodeParamsOnce && m_validSamples) {
         f_setDecodeParamsOnce = false;
@@ -4665,17 +4665,17 @@ void Audio::computeAudioTime(uint16_t bytesDecoderIn, uint16_t bytesDecoderOut) 
         deltaBytesIn = 0;
         nominalBitRate = 0;
 
-        if(m_codec == CODEC_FLAC && FLACGetAudioFileDuration()){
-            m_audioFileDuration = FLACGetAudioFileDuration();
-            nominalBitRate = (m_audioDataSize / FLACGetAudioFileDuration()) * 8;
-            m_avr_bitrate = nominalBitRate;
-        }
-        if(m_codec == CODEC_WAV){
-            nominalBitRate = getBitRate();
-            m_avr_bitrate = nominalBitRate;
-            m_audioFileDuration = m_audioDataSize  / (getSampleRate() * getChannels());
-            if(getBitsPerSample() == 16) m_audioFileDuration /= 2;
-        }
+        // if(m_codec == CODEC_FLAC && FLACGetAudioFileDuration()){
+        //     m_audioFileDuration = FLACGetAudioFileDuration();
+        //     nominalBitRate = (m_audioDataSize / FLACGetAudioFileDuration()) * 8;
+        //     m_avr_bitrate = nominalBitRate;
+        // }
+        // if(m_codec == CODEC_WAV){
+        //     nominalBitRate = getBitRate();
+        //     m_avr_bitrate = nominalBitRate;
+        //     m_audioFileDuration = m_audioDataSize  / (getSampleRate() * getChannels());
+        //     if(getBitsPerSample() == 16) m_audioFileDuration /= 2;
+        // }
     }
 
     sumBytesIn   += bytesDecoderIn;
@@ -4756,95 +4756,95 @@ void Audio::printDecodeError(int r) {
         }
         AUDIO_INFO("MP3 decode error %d : %s", r, e);
     }
-    if(m_codec == CODEC_AAC) {
-        switch(r) {
-            case ERR_AAC_NONE: e = "NONE"; break;
-            case ERR_AAC_INDATA_UNDERFLOW: e = "INDATA_UNDERFLOW"; break;
-            case ERR_AAC_NULL_POINTER: e = "NULL_POINTER"; break;
-            case ERR_AAC_INVALID_ADTS_HEADER: e = "INVALID_ADTS_HEADER"; break;
-            case ERR_AAC_INVALID_ADIF_HEADER: e = "INVALID_ADIF_HEADER"; break;
-            case ERR_AAC_INVALID_FRAME: e = "INVALID_FRAME"; break;
-            case ERR_AAC_MPEG4_UNSUPPORTED: e = "MPEG4_UNSUPPORTED"; break;
-            case ERR_AAC_CHANNEL_MAP: e = "CHANNEL_MAP"; break;
-            case ERR_AAC_SYNTAX_ELEMENT: e = "SYNTAX_ELEMENT"; break;
-            case ERR_AAC_DEQUANT: e = "DEQUANT"; break;
-            case ERR_AAC_STEREO_PROCESS: e = "STEREO_PROCESS"; break;
-            case ERR_AAC_PNS: e = "PNS"; break;
-            case ERR_AAC_SHORT_BLOCK_DEINT: e = "SHORT_BLOCK_DEINT"; break;
-            case ERR_AAC_TNS: e = "TNS"; break;
-            case ERR_AAC_IMDCT: e = "IMDCT"; break;
-            case ERR_AAC_SBR_INIT: e = "SBR_INIT"; break;
-            case ERR_AAC_SBR_BITSTREAM: e = "SBR_BITSTREAM"; break;
-            case ERR_AAC_SBR_DATA: e = "SBR_DATA"; break;
-            case ERR_AAC_SBR_PCM_FORMAT: e = "SBR_PCM_FORMAT"; break;
-            case ERR_AAC_SBR_NCHANS_TOO_HIGH: e = "SBR_NCHANS_TOO_HIGH"; break;
-            case ERR_AAC_SBR_SINGLERATE_UNSUPPORTED: e = "BR_SINGLERATE_UNSUPPORTED"; break;
-            case ERR_AAC_NCHANS_TOO_HIGH: e = "NCHANS_TOO_HIGH"; break;
-            case ERR_AAC_RAWBLOCK_PARAMS: e = "RAWBLOCK_PARAMS"; break;
-            default: e = "ERR_UNKNOWN";
-        }
-        AUDIO_INFO("AAC decode error %d : %s", r, e);
-    }
-    if(m_codec == CODEC_FLAC) {
-        switch(r) {
-            case ERR_FLAC_NONE: e = "NONE"; break;
-            case ERR_FLAC_BLOCKSIZE_TOO_BIG: e = "BLOCKSIZE TOO BIG"; break;
-            case ERR_FLAC_RESERVED_BLOCKSIZE_UNSUPPORTED: e = "Reserved Blocksize unsupported"; break;
-            case ERR_FLAC_SYNC_CODE_NOT_FOUND: e = "SYNC CODE NOT FOUND"; break;
-            case ERR_FLAC_UNKNOWN_CHANNEL_ASSIGNMENT: e = "UNKNOWN CHANNEL ASSIGNMENT"; break;
-            case ERR_FLAC_RESERVED_CHANNEL_ASSIGNMENT: e = "RESERVED CHANNEL ASSIGNMENT"; break;
-            case ERR_FLAC_RESERVED_SUB_TYPE: e = "RESERVED SUB TYPE"; break;
-            case ERR_FLAC_PREORDER_TOO_BIG: e = "PREORDER TOO BIG"; break;
-            case ERR_FLAC_RESERVED_RESIDUAL_CODING: e = "RESERVED RESIDUAL CODING"; break;
-            case ERR_FLAC_WRONG_RICE_PARTITION_NR: e = "WRONG RICE PARTITION NR"; break;
-            case ERR_FLAC_BITS_PER_SAMPLE_TOO_BIG: e = "BITS PER SAMPLE > 16"; break;
-            case ERR_FLAC_BITS_PER_SAMPLE_UNKNOWN: e = "BITS PER SAMPLE UNKNOWN"; break;
-            case ERR_FLAC_DECODER_ASYNC: e = "DECODER ASYNCHRON"; break;
-            case ERR_FLAC_BITREADER_UNDERFLOW: e = "BITREADER ERROR"; break;
-            default: e = "ERR_UNKNOWN";
-        }
-        AUDIO_INFO("FLAC decode error %d : %s", r, e);
-    }
-    if(m_codec == CODEC_OPUS) {
-        switch(r) {
-            case ERR_OPUS_NONE: e = "NONE"; break;
-            case ERR_OPUS_CHANNELS_OUT_OF_RANGE: e = "UNKNOWN CHANNEL ASSIGNMENT"; break;
-            case ERR_OPUS_INVALID_SAMPLERATE: e = "SAMPLERATE IS NOT 48000Hz"; break;
-            case ERR_OPUS_EXTRA_CHANNELS_UNSUPPORTED: e = "EXTRA CHANNELS UNSUPPORTED"; break;
-            case ERR_OPUS_SILK_MODE_UNSUPPORTED: e = "SILK MODE UNSUPPORTED"; break;
-            case ERR_OPUS_HYBRID_MODE_UNSUPPORTED: e = "HYBRID MODE UNSUPPORTED"; break;
-            case ERR_OPUS_NARROW_BAND_UNSUPPORTED: e = "NARROW_BAND_UNSUPPORTED"; break;
-            case ERR_OPUS_WIDE_BAND_UNSUPPORTED: e = "WIDE_BAND_UNSUPPORTED"; break;
-            case ERR_OPUS_SUPER_WIDE_BAND_UNSUPPORTED: e = "SUPER_WIDE_BAND_UNSUPPORTED"; break;
-            case ERR_OPUS_CELT_BAD_ARG: e = "CELT_DECODER_BAD_ARG"; break;
-            case ERR_OPUS_CELT_INTERNAL_ERROR: e = "CELT DECODER INTERNAL ERROR"; break;
-            case ERR_OPUS_CELT_UNIMPLEMENTED: e = "CELT DECODER UNIMPLEMENTED ARG"; break;
-            case ERR_OPUS_CELT_ALLOC_FAIL: e = "CELT DECODER INIT ALLOC FAIL"; break;
-            case ERR_OPUS_CELT_UNKNOWN_REQUEST: e = "CELT_UNKNOWN_REQUEST FAIL"; break;
-            case ERR_OPUS_CELT_GET_MODE_REQUEST: e = "CELT_GET_MODE_REQUEST FAIL"; break;
-            case ERR_OPUS_CELT_CLEAR_REQUEST: e = "CELT_CLEAR_REAUEST_FAIL"; break;
-            case ERR_OPUS_CELT_SET_CHANNELS: e = "CELT_SET_CHANNELS_FAIL"; break;
-            case ERR_OPUS_CELT_END_BAND: e = "CELT_END_BAND_REQUEST_FAIL"; break;
-            case ERR_CELT_OPUS_INTERNAL_ERROR: e = "CELT_INTERNAL_ERROR"; break;
-            default: e = "ERR_UNKNOWN";
-        }
-        AUDIO_INFO("OPUS decode error %d : %s", r, e);
-    }
-    if(m_codec == CODEC_VORBIS) {
-        switch(r) {
-            case ERR_VORBIS_NONE: e = "NONE"; break;
-            case ERR_VORBIS_CHANNELS_OUT_OF_RANGE: e = "CHANNELS OUT OF RANGE"; break;
-            case ERR_VORBIS_INVALID_SAMPLERATE: e = "INVALID SAMPLERATE"; break;
-            case ERR_VORBIS_EXTRA_CHANNELS_UNSUPPORTED: e = "EXTRA CHANNELS UNSUPPORTED"; break;
-            case ERR_VORBIS_DECODER_ASYNC: e = "DECODER ASYNC"; break;
-            case ERR_VORBIS_OGG_SYNC_NOT_FOUND: e = "SYNC NOT FOUND"; break;
-            case ERR_VORBIS_BAD_HEADER: e = "BAD HEADER"; break;
-            case ERR_VORBIS_NOT_AUDIO: e = "NOT AUDIO"; break;
-            case ERR_VORBIS_BAD_PACKET: e = "BAD PACKET"; break;
-            default: e = "ERR_UNKNOWN";
-        }
-        AUDIO_INFO("VORBIS decode error %d : %s", r, e);
-    }
+    // if(m_codec == CODEC_AAC) {
+    //     switch(r) {
+    //         case ERR_AAC_NONE: e = "NONE"; break;
+    //         case ERR_AAC_INDATA_UNDERFLOW: e = "INDATA_UNDERFLOW"; break;
+    //         case ERR_AAC_NULL_POINTER: e = "NULL_POINTER"; break;
+    //         case ERR_AAC_INVALID_ADTS_HEADER: e = "INVALID_ADTS_HEADER"; break;
+    //         case ERR_AAC_INVALID_ADIF_HEADER: e = "INVALID_ADIF_HEADER"; break;
+    //         case ERR_AAC_INVALID_FRAME: e = "INVALID_FRAME"; break;
+    //         case ERR_AAC_MPEG4_UNSUPPORTED: e = "MPEG4_UNSUPPORTED"; break;
+    //         case ERR_AAC_CHANNEL_MAP: e = "CHANNEL_MAP"; break;
+    //         case ERR_AAC_SYNTAX_ELEMENT: e = "SYNTAX_ELEMENT"; break;
+    //         case ERR_AAC_DEQUANT: e = "DEQUANT"; break;
+    //         case ERR_AAC_STEREO_PROCESS: e = "STEREO_PROCESS"; break;
+    //         case ERR_AAC_PNS: e = "PNS"; break;
+    //         case ERR_AAC_SHORT_BLOCK_DEINT: e = "SHORT_BLOCK_DEINT"; break;
+    //         case ERR_AAC_TNS: e = "TNS"; break;
+    //         case ERR_AAC_IMDCT: e = "IMDCT"; break;
+    //         case ERR_AAC_SBR_INIT: e = "SBR_INIT"; break;
+    //         case ERR_AAC_SBR_BITSTREAM: e = "SBR_BITSTREAM"; break;
+    //         case ERR_AAC_SBR_DATA: e = "SBR_DATA"; break;
+    //         case ERR_AAC_SBR_PCM_FORMAT: e = "SBR_PCM_FORMAT"; break;
+    //         case ERR_AAC_SBR_NCHANS_TOO_HIGH: e = "SBR_NCHANS_TOO_HIGH"; break;
+    //         case ERR_AAC_SBR_SINGLERATE_UNSUPPORTED: e = "BR_SINGLERATE_UNSUPPORTED"; break;
+    //         case ERR_AAC_NCHANS_TOO_HIGH: e = "NCHANS_TOO_HIGH"; break;
+    //         case ERR_AAC_RAWBLOCK_PARAMS: e = "RAWBLOCK_PARAMS"; break;
+    //         default: e = "ERR_UNKNOWN";
+    //     }
+    //     AUDIO_INFO("AAC decode error %d : %s", r, e);
+    // }
+    // if(m_codec == CODEC_FLAC) {
+    //     switch(r) {
+    //         case ERR_FLAC_NONE: e = "NONE"; break;
+    //         case ERR_FLAC_BLOCKSIZE_TOO_BIG: e = "BLOCKSIZE TOO BIG"; break;
+    //         case ERR_FLAC_RESERVED_BLOCKSIZE_UNSUPPORTED: e = "Reserved Blocksize unsupported"; break;
+    //         case ERR_FLAC_SYNC_CODE_NOT_FOUND: e = "SYNC CODE NOT FOUND"; break;
+    //         case ERR_FLAC_UNKNOWN_CHANNEL_ASSIGNMENT: e = "UNKNOWN CHANNEL ASSIGNMENT"; break;
+    //         case ERR_FLAC_RESERVED_CHANNEL_ASSIGNMENT: e = "RESERVED CHANNEL ASSIGNMENT"; break;
+    //         case ERR_FLAC_RESERVED_SUB_TYPE: e = "RESERVED SUB TYPE"; break;
+    //         case ERR_FLAC_PREORDER_TOO_BIG: e = "PREORDER TOO BIG"; break;
+    //         case ERR_FLAC_RESERVED_RESIDUAL_CODING: e = "RESERVED RESIDUAL CODING"; break;
+    //         case ERR_FLAC_WRONG_RICE_PARTITION_NR: e = "WRONG RICE PARTITION NR"; break;
+    //         case ERR_FLAC_BITS_PER_SAMPLE_TOO_BIG: e = "BITS PER SAMPLE > 16"; break;
+    //         case ERR_FLAC_BITS_PER_SAMPLE_UNKNOWN: e = "BITS PER SAMPLE UNKNOWN"; break;
+    //         case ERR_FLAC_DECODER_ASYNC: e = "DECODER ASYNCHRON"; break;
+    //         case ERR_FLAC_BITREADER_UNDERFLOW: e = "BITREADER ERROR"; break;
+    //         default: e = "ERR_UNKNOWN";
+    //     }
+    //     AUDIO_INFO("FLAC decode error %d : %s", r, e);
+    // }
+    // if(m_codec == CODEC_OPUS) {
+    //     switch(r) {
+    //         case ERR_OPUS_NONE: e = "NONE"; break;
+    //         case ERR_OPUS_CHANNELS_OUT_OF_RANGE: e = "UNKNOWN CHANNEL ASSIGNMENT"; break;
+    //         case ERR_OPUS_INVALID_SAMPLERATE: e = "SAMPLERATE IS NOT 48000Hz"; break;
+    //         case ERR_OPUS_EXTRA_CHANNELS_UNSUPPORTED: e = "EXTRA CHANNELS UNSUPPORTED"; break;
+    //         case ERR_OPUS_SILK_MODE_UNSUPPORTED: e = "SILK MODE UNSUPPORTED"; break;
+    //         case ERR_OPUS_HYBRID_MODE_UNSUPPORTED: e = "HYBRID MODE UNSUPPORTED"; break;
+    //         case ERR_OPUS_NARROW_BAND_UNSUPPORTED: e = "NARROW_BAND_UNSUPPORTED"; break;
+    //         case ERR_OPUS_WIDE_BAND_UNSUPPORTED: e = "WIDE_BAND_UNSUPPORTED"; break;
+    //         case ERR_OPUS_SUPER_WIDE_BAND_UNSUPPORTED: e = "SUPER_WIDE_BAND_UNSUPPORTED"; break;
+    //         case ERR_OPUS_CELT_BAD_ARG: e = "CELT_DECODER_BAD_ARG"; break;
+    //         case ERR_OPUS_CELT_INTERNAL_ERROR: e = "CELT DECODER INTERNAL ERROR"; break;
+    //         case ERR_OPUS_CELT_UNIMPLEMENTED: e = "CELT DECODER UNIMPLEMENTED ARG"; break;
+    //         case ERR_OPUS_CELT_ALLOC_FAIL: e = "CELT DECODER INIT ALLOC FAIL"; break;
+    //         case ERR_OPUS_CELT_UNKNOWN_REQUEST: e = "CELT_UNKNOWN_REQUEST FAIL"; break;
+    //         case ERR_OPUS_CELT_GET_MODE_REQUEST: e = "CELT_GET_MODE_REQUEST FAIL"; break;
+    //         case ERR_OPUS_CELT_CLEAR_REQUEST: e = "CELT_CLEAR_REAUEST_FAIL"; break;
+    //         case ERR_OPUS_CELT_SET_CHANNELS: e = "CELT_SET_CHANNELS_FAIL"; break;
+    //         case ERR_OPUS_CELT_END_BAND: e = "CELT_END_BAND_REQUEST_FAIL"; break;
+    //         case ERR_CELT_OPUS_INTERNAL_ERROR: e = "CELT_INTERNAL_ERROR"; break;
+    //         default: e = "ERR_UNKNOWN";
+    //     }
+    //     AUDIO_INFO("OPUS decode error %d : %s", r, e);
+    // }
+    // if(m_codec == CODEC_VORBIS) {
+    //     switch(r) {
+    //         case ERR_VORBIS_NONE: e = "NONE"; break;
+    //         case ERR_VORBIS_CHANNELS_OUT_OF_RANGE: e = "CHANNELS OUT OF RANGE"; break;
+    //         case ERR_VORBIS_INVALID_SAMPLERATE: e = "INVALID SAMPLERATE"; break;
+    //         case ERR_VORBIS_EXTRA_CHANNELS_UNSUPPORTED: e = "EXTRA CHANNELS UNSUPPORTED"; break;
+    //         case ERR_VORBIS_DECODER_ASYNC: e = "DECODER ASYNC"; break;
+    //         case ERR_VORBIS_OGG_SYNC_NOT_FOUND: e = "SYNC NOT FOUND"; break;
+    //         case ERR_VORBIS_BAD_HEADER: e = "BAD HEADER"; break;
+    //         case ERR_VORBIS_NOT_AUDIO: e = "NOT AUDIO"; break;
+    //         case ERR_VORBIS_BAD_PACKET: e = "BAD PACKET"; break;
+    //         default: e = "ERR_UNKNOWN";
+    //     }
+    //     AUDIO_INFO("VORBIS decode error %d : %s", r, e);
+    // }
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 bool Audio::setPinout(uint8_t BCLK, uint8_t LRC, uint8_t DOUT, int8_t MCLK) {
