@@ -5274,9 +5274,14 @@ void Audio::IIR_calculateCoefficients(int8_t G0, int8_t G1, int8_t G2) { // Infi
     if(G2 < -40) G2 = -40;
     if(G2 > 6) G2 = 6;
 
-    const float FcLS = 500;    // Frequency LowShelf[Hz]
-    const float FcPKEQ = 3000; // Frequency PeakEQ[Hz]
-    float       FcHS = 6000;   // Frequency HighShelf[Hz]
+    // const float FcLS = 500;    // Frequency LowShelf[Hz]
+    // const float FcPKEQ = 3000; // Frequency PeakEQ[Hz]
+    // float       FcHS = 6000;   // Frequency HighShelf[Hz]
+
+    const float FcHP = 70;    // Frequency HighPass[Hz]
+    const float FcLS = 100;    // Frequency LowShelf[Hz]
+    const float FcPKEQ = 200; // Frequency PeakEQ[Hz]
+    float       FcHS = 5000;   // Frequency HighShelf[Hz]
 
     if(getSampleRate() < FcHS * 2 - 100) { // Prevent HighShelf filter from clogging
         FcHS = getSampleRate() / 2 - 100;
