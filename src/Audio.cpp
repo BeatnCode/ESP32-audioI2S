@@ -2378,6 +2378,15 @@ void Audio::playChunk() {
             IIR_filterChain1(*sample);
             IIR_filterChain2(*sample);
         }
+        
+        //---------- Stereo -> Mono  ---------------------------------------
+        if (m_f_forceMono && m_channels == 2) {
+            s2 = *sample;
+            int32_t xy = (s2[RIGHTCHANNEL] + s2[LEFTCHANNEL]) / 2;
+            s2[RIGHTCHANNEL] = (int16_t)xy;
+            s2[LEFTCHANNEL] = (int16_t)xy;
+        }
+        
         //------------------------------------------------------------------
         Gain(*sample);
         if(m_f_internalDAC) {
