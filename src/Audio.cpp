@@ -5286,9 +5286,22 @@ void Audio::IIR_calculateCoefficients(int8_t G0, int8_t G1, int8_t G2) { // Infi
     if(G2 < -40) G2 = -40;
     if(G2 > 6) G2 = 6;
 
-    const float FcLS = 500;    // Frequency LowShelf[Hz]
-    const float FcPKEQ = 3000; // Frequency PeakEQ[Hz]
-    float       FcHS = 6000;   // Frequency HighShelf[Hz]
+    #ifdef M_BOX
+        const float FcHP = 70;    // Frequency HighPass[Hz]
+        const float FcLS = 100;    // Frequency LowShelf[Hz]
+        const float FcPKEQ = 200; // Frequency PeakEQ[Hz]
+        float       FcHS = 5000;   // Frequency HighShelf[Hz]
+        #elif defined(P_BOX)
+        const float FcHP = 90;    // Frequency HighPass[Hz]
+        const float FcLS = 150;    // Frequency LowShelf[Hz]
+        const float FcPKEQ = 280; // Frequency PeakEQ[Hz]
+        float       FcHS = 5000;   // Frequency HighShelf[Hz]
+        #else
+        const float FcHP = 70;    // Frequency HighPass[Hz]
+        const float FcLS = 500;    // Frequency LowShelf[Hz]
+        const float FcPKEQ = 3000; // Frequency PeakEQ[Hz]
+        float       FcHS = 6000;   // Frequency HighShelf[Hz]
+    #endif
 
     if(getSampleRate() < FcHS * 2 - 100) { // Prevent HighShelf filter from clogging
         FcHS = getSampleRate() / 2 - 100;
@@ -5298,33 +5311,56 @@ void Audio::IIR_calculateCoefficients(int8_t G0, int8_t G1, int8_t G2) { // Infi
     }
     float K, norm, Q, Fc, V;
 
-    // LOWSHELF
-    Fc = (float)FcLS / (float)getSampleRate(); // Cutoff frequency
-    K = tanf((float)PI * Fc);
-    V = powf(10, fabs(G0) / 20.0);
 
-    if(G0 >= 0) { // boost
-        norm = 1 / (1 + sqrtf(2) * K + K * K);
-        m_filter[LOWSHELF].a0 = (1 + sqrtf(2 * V) * K + V * K * K) * norm;
-        m_filter[LOWSHELF].a1 = 2 * (V * K * K - 1) * norm;
-        m_filter[LOWSHELF].a2 = (1 - sqrtf(2 * V) * K + V * K * K) * norm;
-        m_filter[LOWSHELF].b1 = 2 * (K * K - 1) * norm;
-        m_filter[LOWSHELF].b2 = (1 - sqrtf(2) * K + K * K) * norm;
-    }
-    else { // cut
-        norm = 1 / (1 + sqrtf(2 * V) * K + V * K * K);
-        m_filter[LOWSHELF].a0 = (1 + sqrtf(2) * K + K * K) * norm;
-        m_filter[LOWSHELF].a1 = 2 * (K * K - 1) * norm;
-        m_filter[LOWSHELF].a2 = (1 - sqrtf(2) * K + K * K) * norm;
-        m_filter[LOWSHELF].b1 = 2 * (V * K * K - 1) * norm;
-        m_filter[LOWSHELF].b2 = (1 - sqrtf(2 * V) * K + V * K * K) * norm;
-    }
+    // LOWSHELF -> HIGHPASS
+    Q = 1.0 + (1.0 * G0) / 10;      // Quality factor
+    if (Q < 0.1) Q = 0.1;           // limit Q to minimum 0.1 to avoid extreme filter settings
+    Fc = (float)FcHP / (float)getSampleRate(); // Cutoff frequency
+    K = tanf((float)PI * Fc);
+
+    norm = 1 / (1 + K / Q + K * K);
+    m_filter[LOWSHELF].a0 = 1 * norm;
+    m_filter[LOWSHELF].a1 = -2 * 1 * norm;
+    m_filter[LOWSHELF].a2 = 1 * norm;
+    m_filter[LOWSHELF].b1 = 2 * (K * K - 1) * norm;
+    m_filter[LOWSHELF].b2 = (1 - K / Q + K * K) * norm;
+
+    // // LOWSHELF
+    // Fc = (float)FcLS / (float)getSampleRate(); // Cutoff frequency
+    // K = tanf((float)PI * Fc);
+    // V = powf(10, fabs(G0) / 20.0);
+
+    // if(G0 >= 0) { // boost
+    //     norm = 1 / (1 + sqrtf(2) * K + K * K);
+    //     m_filter[LOWSHELF].a0 = (1 + sqrtf(2 * V) * K + V * K * K) * norm;
+    //     m_filter[LOWSHELF].a1 = 2 * (V * K * K - 1) * norm;
+    //     m_filter[LOWSHELF].a2 = (1 - sqrtf(2 * V) * K + V * K * K) * norm;
+    //     m_filter[LOWSHELF].b1 = 2 * (K * K - 1) * norm;
+    //     m_filter[LOWSHELF].b2 = (1 - sqrtf(2) * K + K * K) * norm;
+    // }
+    // else { // cut
+    //     norm = 1 / (1 + sqrtf(2 * V) * K + V * K * K);
+    //     m_filter[LOWSHELF].a0 = (1 + sqrtf(2) * K + K * K) * norm;
+    //     m_filter[LOWSHELF].a1 = 2 * (K * K - 1) * norm;
+    //     m_filter[LOWSHELF].a2 = (1 - sqrtf(2) * K + K * K) * norm;
+    //     m_filter[LOWSHELF].b1 = 2 * (V * K * K - 1) * norm;
+    //     m_filter[LOWSHELF].b2 = (1 - sqrtf(2 * V) * K + V * K * K) * norm;
+    // }
 
     // PEAK EQ
     Fc = (float)FcPKEQ / (float)getSampleRate(); // Cutoff frequency
     K = tanf((float)PI * Fc);
     V = powf(10, fabs(G1) / 20.0);
     Q = 2.5;      // Quality factor
+
+    #ifdef M_BOX
+    Q = 1.5;      // Quality factor
+    #elif defined(P_BOX)
+    Q = 1.5;      // Quality factor
+    #else
+    Q = 2.5;      // Quality factor
+    #endif
+
     if(G1 >= 0) { // boost
         norm = 1 / (1 + 1 / Q * K + K * K);
         m_filter[PEAKEQ].a0 = (1 + V / Q * K + K * K) * norm;
